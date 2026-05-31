@@ -1,0 +1,37 @@
+{
+    "schemaVersion": 1,
+    "id": "hoggielibrary",
+    "version": "${version}",
+    "name": "Hoggie Library",
+    "description": "A comprehensive Minecraft modding framework for Fabric providing APIs for combat, practice, RPG, Bedwars, bots, GUI, and more.",
+    "authors": ["Hoggie"],
+    "contact": {
+        "homepage": "https://github.com/hoggie/hoggielibrary",
+        "issues": "https://github.com/hoggie/hoggielibrary/issues",
+        "sources": "https://github.com/hoggie/hoggielibrary"
+    },
+    "license": "MIT",
+    "icon": "assets/hoggielibrary/icon.png",
+    "environment": "*",
+    "entrypoints": {
+        "main": ["net.hoggielibrary.core.HoggieLibraryMod"],
+        "client": ["net.hoggielibrary.core.HoggieLibraryClient"]
+    },
+    "mixins": ["hoggielibrary.mixins.json"],
+    "accessWidener": "hoggielibrary.accesswidener",
+    "depends": {
+        "fabricloader": ">=${loader_version}",
+        "fabric-api": "*",
+        "minecraft": ">=1.21.1",
+        "java": ">=21"
+    },
+    "breaks": {
+        "optifabric": "*"
+    },
+    "custom": {
+        "modmenu": {
+            "badges": ["library"],
+            "update_checker": false
+        }
+    }
+}

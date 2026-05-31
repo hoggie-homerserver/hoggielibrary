@@ -1,0 +1,17 @@
+{
+    "schemaVersion": 1,
+    "id": "hoggie-bedwars-example",
+    "version": "${version}",
+    "name": "Hoggie Bedwars Example",
+    "description": "Example mod demonstrating the Hoggie Library Bedwars Framework",
+    "authors": ["Hoggie"],
+    "license": "MIT",
+    "environment": "*",
+    "entrypoints": { "main": ["net.hoggielibrary.examples.bedwars.BedwarsExampleMod"] },
+    "depends": {
+        "fabricloader": ">=0.16.9",
+        "fabric-api": "*",
+        "hoggielibrary": "*",
+        "minecraft": ">=1.21.1"
+    }
+}

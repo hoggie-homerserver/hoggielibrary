@@ -1,0 +1,173 @@
+plugins {
+    id "fabric-loom" version "1.14.10"
+    id "maven-publish"
+}
+
+version = project.mod_version
+group = project.maven_group
+
+base {
+    archivesName = project.archives_base_name
+}
+
+loom {
+    accessWidenerPath = file("src/main/resources/hoggielibrary.accesswidener")
+
+    runs {
+        client {
+            client()
+            setConfigName("Minecraft Client")
+            ideConfigGenerated(true)
+            runDir("run")
+        }
+        server {
+            server()
+            setConfigName("Minecraft Server")
+            ideConfigGenerated(true)
+            runDir("run")
+        }
+    }
+}
+
+repositories {
+    mavenCentral()
+    maven {
+        name = "Fabric"
+        url = uri("https://maven.fabricmc.net/")
+    }
+}
+
+dependencies {
+    minecraft "com.mojang:minecraft:${project.minecraft_version}"
+    mappings "net.fabricmc:yarn:${project.yarn_mappings}:v2"
+    modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
+    modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
+}
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(project.java_version)
+    }
+    withSourcesJar()
+    withJavadocJar()
+}
+
+tasks.withType(JavaCompile).configureEach {
+    it.options.release = project.java_version as Integer
+    it.options.encoding = "UTF-8"
+}
+
+javadoc {
+    options {
+        encoding = "UTF-8"
+        charSet = "UTF-8"
+        author = true
+        version = true
+        title = "Hoggie Library ${project.version} API"
+        links("https://docs.oracle.com/en/java/javase/21/docs/api/")
+        links("https://maven.fabricmc.net/docs/fabric-api-0.140.2+1.21.11/")
+        if (JavaVersion.current().isJava9Compatible()) {
+            options.addBooleanOption("html5", true)
+        }
+    }
+    exclude("net/hoggielibrary/impl/**")
+    exclude("net/hoggielibrary/mixin/**")
+}
+
+tasks.jar {
+    from("LICENSE") {
+        rename { "${it}_${project.archives_base_name}" }
+    }
+    manifest {
+        attributes(
+            "Implementation-Title": "Hoggie Library",
+            "Implementation-Version": project.version,
+            "Implementation-Vendor": "Hoggie",
+            "Fabric-Loader-Entrypoint": "net.hoggielibrary.core.HoggieLibraryMod"
+        )
+    }
+}
+
+processResources {
+    inputs.properties([
+        "version"    : project.version,
+        "loader_version": project.loader_version
+    ])
+    filesMatching("fabric.mod.json") {
+        expand([
+            "version"    : project.version,
+            "loader_version": project.loader_version
+        ])
+    }
+}
+
+publishing {
+    publications {
+        create("mavenJava", MavenPublication) {
+            artifactId = project.archives_base_name
+            artifact(remapJar) {
+                builtBy remapJar
+            }
+            artifact(sourcesJar) {
+                builtBy remapSourcesJar
+            }
+            artifact(javadocJar) {
+                builtBy javadocJar
+            }
+            pom {
+                name = "Hoggie Library"
+                description = "A comprehensive Minecraft modding framework for Fabric"
+                url = "https://github.com/hoggie/hoggielibrary"
+                licenses {
+                    license {
+                        name = "MIT License"
+                        url = "https://opensource.org/licenses/MIT"
+                    }
+                }
+                developers {
+                    developer {
+                        id = "hoggie"
+                        name = "Hoggie"
+                    }
+                }
+                scm {
+                    connection = "scm:git:git://github.com/hoggie-homerserver/hoggielibrary.git"
+                    developerConnection = "scm:git:ssh://github.com:hoggie-homerserver/hoggielibrary.git"
+                    url = "https://github.com/hoggie-homerserver/hoggielibrary"
+                }
+            }
+        }
+    }
+    repositories {
+        mavenLocal()
+        maven {
+            name = "GitHubPackages"
+            url = uri("https://maven.pkg.github.com/hoggie-homerserver/hoggielibrary")
+            credentials {
+                username = System.getenv("GITHUB_ACTOR") ?: System.getenv("GITHUB_USERNAME") ?: ""
+                password = System.getenv("GITHUB_TOKEN") ?: ""
+            }
+        }
+    }
+}
+
+task install(dependsOn: publishToMavenLocal) {
+    description = "Installs the library to the local Maven repository"
+}
+
+def githubToken = System.getenv("GITHUB_TOKEN")
+if (githubToken != null && !githubToken.isEmpty()) {
+    publishing.repositories.withType(MavenArtifactRepository).matching {
+        it.name == "GitHubPackages"
+    }.configureEach {
+        credentials {
+            username = System.getenv("GITHUB_ACTOR") ?: System.getenv("GITHUB_USERNAME") ?: ""
+            password = githubToken
+        }
+    }
+}
+
+tasks.register("publishAll") {
+    dependsOn publishToMavenLocal, "publishMavenJavaPublicationToGitHubPackagesRepository"
+    description = "Publishes to mavenLocal and GitHub Packages"
+}

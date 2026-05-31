@@ -1,0 +1,17 @@
+{
+    "schemaVersion": 1,
+    "id": "hoggie-practice-example",
+    "version": "${version}",
+    "name": "Hoggie Practice Example",
+    "description": "Example mod demonstrating the Hoggie Library Practice Framework",
+    "authors": ["Hoggie"],
+    "license": "MIT",
+    "environment": "*",
+    "entrypoints": { "main": ["net.hoggielibrary.examples.practice.PracticeExampleMod"] },
+    "depends": {
+        "fabricloader": ">=0.16.9",
+        "fabric-api": "*",
+        "hoggielibrary": "*",
+        "minecraft": ">=1.21.1"
+    }
+}
