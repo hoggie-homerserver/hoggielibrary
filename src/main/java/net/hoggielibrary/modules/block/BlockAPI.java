@@ -9,6 +9,7 @@ import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
+import net.minecraft.registry.RegistryKey;
 import net.minecraft.util.Identifier;
 
 import java.util.function.Function;
@@ -17,25 +18,31 @@ public final class BlockAPI {
 
     public static Block registerBlock(String modId, String name, AbstractBlock.Settings settings) {
         Identifier id = Identifier.of(modId, name);
-        return Registry.register(Registries.BLOCK, id, new Block(settings));
+        RegistryKey<Block> key = RegistryKey.of(Registries.BLOCK.getKey(), id);
+        return Registry.register(Registries.BLOCK, key, new Block(settings.registryKey(key)));
     }
 
     public static Block registerBlock(String modId, String name, Function<AbstractBlock.Settings, Block> factory, AbstractBlock.Settings settings) {
         Identifier id = Identifier.of(modId, name);
-        return Registry.register(Registries.BLOCK, id, factory.apply(settings));
+        RegistryKey<Block> key = RegistryKey.of(Registries.BLOCK.getKey(), id);
+        return Registry.register(Registries.BLOCK, key, factory.apply(settings.registryKey(key)));
     }
 
     public static Block registerBlockWithItem(String modId, String name, AbstractBlock.Settings blockSettings, Item.Settings itemSettings) {
-        Block block = registerBlock(modId, name, blockSettings);
         Identifier id = Identifier.of(modId, name);
-        Registry.register(Registries.ITEM, id, new BlockItem(block, itemSettings));
+        RegistryKey<Block> blockKey = RegistryKey.of(Registries.BLOCK.getKey(), id);
+        RegistryKey<Item> itemKey = RegistryKey.of(Registries.ITEM.getKey(), id);
+        Block block = Registry.register(Registries.BLOCK, blockKey, new Block(blockSettings.registryKey(blockKey)));
+        Registry.register(Registries.ITEM, itemKey, new BlockItem(block, itemSettings.registryKey(itemKey)));
         return block;
     }
 
     public static Block registerBlockWithItem(String modId, String name, Function<AbstractBlock.Settings, Block> factory, AbstractBlock.Settings blockSettings, Item.Settings itemSettings) {
-        Block block = registerBlock(modId, name, factory, blockSettings);
         Identifier id = Identifier.of(modId, name);
-        Registry.register(Registries.ITEM, id, new BlockItem(block, itemSettings));
+        RegistryKey<Block> blockKey = RegistryKey.of(Registries.BLOCK.getKey(), id);
+        RegistryKey<Item> itemKey = RegistryKey.of(Registries.ITEM.getKey(), id);
+        Block block = Registry.register(Registries.BLOCK, blockKey, factory.apply(blockSettings.registryKey(blockKey)));
+        Registry.register(Registries.ITEM, itemKey, new BlockItem(block, itemSettings.registryKey(itemKey)));
         return block;
     }
 

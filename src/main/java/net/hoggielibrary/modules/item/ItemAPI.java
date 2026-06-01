@@ -8,6 +8,7 @@ import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
+import net.minecraft.registry.RegistryKey;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 
@@ -17,12 +18,14 @@ public final class ItemAPI {
 
     public static Item registerItem(String modId, String name, Item.Settings settings) {
         Identifier id = Identifier.of(modId, name);
-        return Registry.register(Registries.ITEM, id, new Item(settings));
+        RegistryKey<Item> key = RegistryKey.of(Registries.ITEM.getKey(), id);
+        return Registry.register(Registries.ITEM, key, new Item(settings.registryKey(key)));
     }
 
     public static <T extends Item> T registerItem(String modId, String name, java.util.function.Function<Item.Settings, T> factory, Item.Settings settings) {
         Identifier id = Identifier.of(modId, name);
-        return Registry.register(Registries.ITEM, id, factory.apply(settings));
+        RegistryKey<Item> key = RegistryKey.of(Registries.ITEM.getKey(), id);
+        return Registry.register(Registries.ITEM, key, factory.apply(settings.registryKey(key)));
     }
 
     public static Item registerFood(String modId, String name, int nutrition, float saturationMod, Item.Settings settings) {
@@ -31,7 +34,10 @@ public final class ItemAPI {
                 .saturationModifier(saturationMod)
                 .alwaysEdible()
                 .build();
-        return registerItem(modId, name, settings.component(DataComponentTypes.FOOD, food));
+        Identifier id = Identifier.of(modId, name);
+        RegistryKey<Item> key = RegistryKey.of(Registries.ITEM.getKey(), id);
+        return Registry.register(Registries.ITEM, key,
+                new Item(settings.registryKey(key).component(DataComponentTypes.FOOD, food)));
     }
 
     public static void registerItemGroup(String modId, String name, Text displayName, ItemStack icon, List<ItemStack> items) {

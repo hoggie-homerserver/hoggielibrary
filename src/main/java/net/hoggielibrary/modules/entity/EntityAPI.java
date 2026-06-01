@@ -102,14 +102,16 @@ public final class EntityAPI {
 
     public static Item registerSpawnEgg(String modId, String name, EntityType<? extends MobEntity> type, int primaryColor, int secondaryColor) {
         Identifier id = Identifier.of(modId, name);
-        Item egg = new SpawnEggItem(new Item.Settings().spawnEgg(type));
-        return Registry.register(Registries.ITEM, id, egg);
+        RegistryKey<Item> key = RegistryKey.of(Registries.ITEM.getKey(), id);
+        Item egg = new SpawnEggItem(new Item.Settings().registryKey(key).spawnEgg(type));
+        return Registry.register(Registries.ITEM, key, egg);
     }
 
     public static Item registerSpawnEgg(String modId, String name, EntityType<? extends MobEntity> type, int primaryColor, int secondaryColor, Item.Settings settings) {
         Identifier id = Identifier.of(modId, name);
-        Item egg = new SpawnEggItem(settings.spawnEgg(type));
-        return Registry.register(Registries.ITEM, id, egg);
+        RegistryKey<Item> key = RegistryKey.of(Registries.ITEM.getKey(), id);
+        Item egg = new SpawnEggItem(settings.registryKey(key).spawnEgg(type));
+        return Registry.register(Registries.ITEM, key, egg);
     }
 
     // ── Entity + Attributes + Spawn Egg (all-in-one) ──
