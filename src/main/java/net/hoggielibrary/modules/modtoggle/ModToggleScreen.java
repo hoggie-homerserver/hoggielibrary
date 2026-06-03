@@ -9,13 +9,13 @@ import net.hoggielibrary.modules.gui.components.ScrollPanel;
 import net.hoggielibrary.modules.gui.components.Toggle;
 import net.minecraft.text.Text;
 
-import java.util.Map;
+import java.util.List;
 
 public class ModToggleScreen extends ContainerScreen {
 
     public ModToggleScreen() {
         super(Text.literal("Mod Toggle"), VanillaBackground.GENERIC_54_W, VanillaBackground.GENERIC_54_H);
-        setBgSize(Math.max(VanillaBackground.GENERIC_54_W, 240), Math.max(VanillaBackground.GENERIC_54_H, 200));
+        setBgSize(Math.max(VanillaBackground.GENERIC_54_W, 260), Math.max(VanillaBackground.GENERIC_54_H, 210));
     }
 
     @Override
@@ -23,32 +23,34 @@ public class ModToggleScreen extends ContainerScreen {
         super.init();
         children.clear();
 
-        Map<String, Boolean> toggles = Hoggie.modToggle.getAllToggles();
+        List<ModToggleAPI.ModEntry> entries = Hoggie.modToggle.getAllToggles();
+
+        Label header = new Label(containerX + 8, containerY + 18, "§lMods (" + entries.size() + " found)");
+        header.setTextColor(0xFF88CCFF);
+        add(header);
 
         int panelX = containerX + 7;
-        int panelY = containerY + 18;
+        int panelY = containerY + 30;
         int panelW = bgWidth - 14;
-        int panelH = bgHeight - 40;
+        int panelH = bgHeight - 54;
 
         ScrollPanel scroll = new ScrollPanel(panelX, panelY, panelW, panelH);
         scroll.setBackgroundColor(0x00000000);
 
         int sy = panelY + 4;
-        for (Map.Entry<String, Boolean> entry : toggles.entrySet()) {
-            String modId = entry.getKey();
-            boolean enabled = entry.getValue();
-
-            String label = modId;
-            String displayName = getModName(modId);
-            if (!displayName.equals(modId)) {
-                label = displayName + " §7(" + modId + ")";
+        for (ModToggleAPI.ModEntry mod : entries) {
+            String label = mod.displayName();
+            if (!mod.displayName().equals(mod.modId())) {
+                label = mod.displayName() + " §7(" + mod.modId() + ")";
             }
 
-            Toggle toggle = new Toggle(panelX + 8, sy, label, enabled, val -> {
-                Hoggie.modToggle.setEnabled(modId, val);
-                String msg = val ? "§aEnabled" : "§cDisabled";
-                String modName = getModName(modId);
-                Hoggie.notifications.info(msg + " §f" + modName);
+            String status = mod.enabled() ? "§aON" : "§cOFF";
+            Label statusLabel = new Label(panelX + panelW - 50, sy, status);
+            statusLabel.setTextColor(mod.enabled() ? 0xFF40AA40 : 0xFFAA4040);
+            scroll.add(statusLabel);
+
+            Toggle toggle = new Toggle(panelX + 8, sy, label, mod.enabled(), val -> {
+                Hoggie.modToggle.setEnabled(mod.modId(), val);
             });
             toggle.setLabelColor(0xFFE0E0E0);
             toggle.setTrackOnColor(0xFF40AA40);
@@ -57,28 +59,15 @@ public class ModToggleScreen extends ContainerScreen {
             sy += 24;
         }
 
-        if (toggles.isEmpty()) {
-            scroll.add(new Label(panelX + 8, panelY + 8, "§7No toggleable mods found"));
+        if (entries.isEmpty()) {
+            scroll.add(new Label(panelX + 8, panelY + 8, "§7No mods found in mods folder"));
         }
 
         scroll.recalcContentHeight();
         add(scroll);
 
-        int btnW = 60;
+        int btnW = 80;
         int btnX = containerX + (bgWidth - btnW) / 2;
-        int btnY = containerY + bgHeight - 22;
-
-        add(new Button(btnX, btnY, btnW, 18, "Close", b -> close()));
-    }
-
-    private static String getModName(String modId) {
-        try {
-            return net.fabricmc.loader.api.FabricLoader.getInstance()
-                    .getModContainer(modId)
-                    .map(c -> c.getMetadata().getName())
-                    .orElse(modId);
-        } catch (Exception e) {
-            return modId;
-        }
+        add(new Button(btnX, containerY + bgHeight - 22, btnW, 18, "Close", b -> close()));
     }
 }
