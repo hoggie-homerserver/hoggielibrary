@@ -29,7 +29,7 @@ public final class GuiCommand implements HoggieClientCommandRegistry.HoggieClien
                                 .then(argument("screen", StringArgumentType.word())
                                         .executes(ctx -> {
                                             String name = StringArgumentType.getString(ctx, "screen");
-                                            Identifier id = Identifier.of(PREFIX + name);
+                                            Identifier id = Identifier.of("hoggielibrary", PREFIX + name);
                                             HoggieScreen screen = GuiScreenRegistry.open(id);
                                             if (screen == null) {
                                                 ctx.getSource().sendError(
