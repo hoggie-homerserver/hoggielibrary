@@ -1,5 +1,7 @@
 {
     "key.categories.hoggielibrary.general": "Hoggie Library",
     "key.hoggielibrary.debug": "Debug Info",
-    "key.hoggielibrary.menu": "Open Menu"
+    "key.hoggielibrary.menu": "Open Menu",
+    "key.hoggielibrary.modtoggle": "Mod Toggle",
+    "screen.hoggielibrary.modtoggle": "Mod Toggle"
 }

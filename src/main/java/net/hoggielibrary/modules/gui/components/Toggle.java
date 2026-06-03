@@ -59,4 +59,5 @@ public class Toggle extends HoggieWidget {
     public void setTrackOffColor(int c) { this.trackOffColor = c; }
     public void setTrackOnColor(int c) { this.trackOnColor = c; }
     public void setHandleColor(int c) { this.handleColor = c; }
+    public void setLabelColor(int c) { this.labelColor = c; }
 }

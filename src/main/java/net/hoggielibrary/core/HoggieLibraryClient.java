@@ -6,7 +6,10 @@ import net.fabricmc.api.Environment;
 import net.hoggielibrary.core.command.HoggieClientCommandRegistry;
 import net.hoggielibrary.core.keybind.HoggieKeybindManager;
 import net.hoggielibrary.core.logging.HoggieLogger;
+import net.hoggielibrary.modules.gui.GuiScreenRegistry;
 import net.hoggielibrary.modules.gui.command.GuiCommand;
+import net.hoggielibrary.modules.modtoggle.ModToggleScreen;
+import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
 public final class HoggieLibraryClient implements ClientModInitializer {
@@ -28,6 +31,12 @@ public final class HoggieLibraryClient implements ClientModInitializer {
 
         HoggieClientCommandRegistry.registerCommands();
         GuiCommand.register();
+
+        GuiScreenRegistry.register(Identifier.of("hoggielibrary", "hoggie_gui_modtoggle"), ModToggleScreen::new);
+
+        this.keybindManager.register("key.hoggielibrary.modtoggle", -1,
+                Identifier.of("hoggielibrary", "general"),
+                () -> GuiScreenRegistry.open(Identifier.of("hoggielibrary", "hoggie_gui_modtoggle")));
 
         HoggieLogger.info("Hoggie Library client initialized");
     }

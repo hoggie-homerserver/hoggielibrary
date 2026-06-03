@@ -23,6 +23,7 @@ import net.hoggielibrary.modules.rpg.RpgAPI;
 import net.hoggielibrary.modules.bot.BotAPI;
 import net.hoggielibrary.modules.storage.StorageAPI;
 import net.hoggielibrary.modules.developer.DeveloperAPI;
+import net.hoggielibrary.modules.modtoggle.ModToggleAPI;
 
 /**
  * Central API entry point for Hoggie Library.
@@ -85,6 +86,8 @@ public final class Hoggie {
     public static final StorageAPI storage = new StorageAPI();
     /** Developer tools and debugging */
     public static final DeveloperAPI developer = new DeveloperAPI();
+    /** Mod toggle management */
+    public static final ModToggleAPI modToggle = new ModToggleAPI();
     // Internal core systems (lazy-loaded - see initialize())
     /** Task scheduling */
     public static HoggieScheduler scheduler;
